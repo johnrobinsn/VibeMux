@@ -18,7 +18,7 @@ sessions=$(tmux list-sessions 2>/dev/null)
 if [ -n "$sessions" ]; then
     # Sessions exist - auto-attach to first one
     first_session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | head -1)
-    exec tmux attach-session -t "$first_session"
+    tmux attach-session -t "$first_session"
 else
     # No sessions exist - offer to create one or skip
     echo "No tmux sessions running."
@@ -32,13 +32,13 @@ else
 
     case "$choice" in
         "")
-            exec tmux new-session
+            tmux new-session
             ;;
         s|S)
             return
             ;;
         *)
-            exec tmux new-session -s "$choice"
+            tmux new-session -s "$choice"
             ;;
     esac
 fi
