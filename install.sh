@@ -46,31 +46,6 @@ git clone https://github.com/johnrobinsn/VibeMux "$HOME/VibeMux"
 echo "Creating ~/.tmux.conf..."
 echo "source-file ~/VibeMux/tmux.conf" > "$HOME/.tmux.conf"
 
-# Optionally add session script to .bashrc
-BASHRC_LINE='[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh'
-
-if [ -f "$HOME/.bashrc" ] && grep -qF "VibeMux/tmux-session.sh" "$HOME/.bashrc"; then
-    echo "VibeMux session script already in ~/.bashrc"
-else
-    echo ""
-    echo "Would you like to add tmux session management to ~/.bashrc?"
-    echo "This will prompt you to attach/create tmux sessions on terminal start."
-    printf "Add to .bashrc? [y/N]: "
-
-    # Read from terminal (works with curl pipe)
-    exec < /dev/tty
-    read -r add_bashrc
-
-    if [ "$add_bashrc" = "y" ] || [ "$add_bashrc" = "Y" ]; then
-        echo "" >> "$HOME/.bashrc"
-        echo "# VibeMux tmux session management" >> "$HOME/.bashrc"
-        echo "$BASHRC_LINE" >> "$HOME/.bashrc"
-        echo "Added tmux session script to ~/.bashrc"
-    else
-        echo "Skipped .bashrc modification"
-    fi
-fi
-
 echo ""
 echo "VibeMux installed successfully!"
 echo ""
@@ -84,3 +59,31 @@ echo "  Shift+Left/Right - Navigate windows"
 echo "  Prefix + |    - Split horizontal"
 echo "  Prefix + -    - Split vertical"
 echo "  Prefix + r    - Reload config"
+echo ""
+
+# Optionally add session script to .bashrc (done last for curl pipe compatibility)
+BASHRC_LINE='[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh'
+
+if [ -f "$HOME/.bashrc" ] && grep -qF "VibeMux/tmux-session.sh" "$HOME/.bashrc"; then
+    echo "VibeMux session script already in ~/.bashrc"
+else
+    echo "Would you like to add tmux session management to ~/.bashrc?"
+    echo "This will prompt you to attach/create tmux sessions on terminal start."
+    printf "Add to .bashrc? [y/N]: "
+
+    # Read from terminal (works with curl pipe)
+    exec 3<&0          # save stdin
+    exec < /dev/tty    # redirect stdin from tty
+    read -r add_bashrc
+    exec 0<&3          # restore stdin
+    exec 3<&-          # close fd 3
+
+    if [ "$add_bashrc" = "y" ] || [ "$add_bashrc" = "Y" ]; then
+        echo "" >> "$HOME/.bashrc"
+        echo "# VibeMux tmux session management" >> "$HOME/.bashrc"
+        echo "$BASHRC_LINE" >> "$HOME/.bashrc"
+        echo "Added tmux session script to ~/.bashrc"
+    else
+        echo "Skipped .bashrc modification"
+    fi
+fi
