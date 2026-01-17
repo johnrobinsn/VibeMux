@@ -46,22 +46,25 @@ git clone https://github.com/johnrobinsn/VibeMux "$HOME/VibeMux"
 echo "Creating ~/.tmux.conf..."
 echo "source-file ~/VibeMux/tmux.conf" > "$HOME/.tmux.conf"
 
-# Add session script to .bashrc
+# Optionally add session script to .bashrc
 BASHRC_LINE='[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh'
 
-if [ -f "$HOME/.bashrc" ]; then
-    if ! grep -qF "VibeMux/tmux-session.sh" "$HOME/.bashrc"; then
+if [ -f "$HOME/.bashrc" ] && grep -qF "VibeMux/tmux-session.sh" "$HOME/.bashrc"; then
+    echo "VibeMux session script already in ~/.bashrc"
+else
+    echo ""
+    echo "Would you like to add tmux session management to ~/.bashrc?"
+    echo "This will prompt you to attach/create tmux sessions on terminal start."
+    read -r -p "Add to .bashrc? [y/N]: " add_bashrc
+
+    if [ "$add_bashrc" = "y" ] || [ "$add_bashrc" = "Y" ]; then
         echo "" >> "$HOME/.bashrc"
         echo "# VibeMux tmux session management" >> "$HOME/.bashrc"
         echo "$BASHRC_LINE" >> "$HOME/.bashrc"
         echo "Added tmux session script to ~/.bashrc"
     else
-        echo "VibeMux session script already in ~/.bashrc"
+        echo "Skipped .bashrc modification"
     fi
-else
-    echo "# VibeMux tmux session management" > "$HOME/.bashrc"
-    echo "$BASHRC_LINE" >> "$HOME/.bashrc"
-    echo "Created ~/.bashrc with tmux session script"
 fi
 
 echo ""
