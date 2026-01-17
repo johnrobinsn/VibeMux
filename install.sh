@@ -55,7 +55,7 @@ else
     echo ""
     echo "Would you like to add tmux session management to ~/.bashrc?"
     echo "This will prompt you to attach/create tmux sessions on terminal start."
-    read -r -p "Add to .bashrc? [y/N]: " add_bashrc
+    read -r -p "Add to .bashrc? [y/N]: " add_bashrc < /dev/tty
 
     if [ "$add_bashrc" = "y" ] || [ "$add_bashrc" = "Y" ]; then
         echo "" >> "$HOME/.bashrc"
