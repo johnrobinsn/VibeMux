@@ -104,11 +104,7 @@ else
     printf "Add to ~/$SHELL_RC_NAME? [y/N]: "
 
     # Read from terminal (works with curl pipe)
-    exec 3<&0          # save stdin
-    exec < /dev/tty    # redirect stdin from tty
-    read -r add_rc
-    exec 0<&3          # restore stdin
-    exec 3<&-          # close fd 3
+    read -r add_rc < /dev/tty
 
     if [ "$add_rc" = "y" ] || [ "$add_rc" = "Y" ]; then
         # Create the rc file if it doesn't exist
