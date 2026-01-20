@@ -4,45 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a tmux configuration repository containing a single `tmux.conf` file for customizing the tmux terminal multiplexer.
+VibeMux is a tmux configuration with intuitive key bindings, nested session support, and automatic session management. It consists of three files:
 
-## Installation
+- `tmux.conf` - Main tmux configuration
+- `install.sh` - One-line installer script (bash/zsh, Linux/macOS)
+- `tmux-session.sh` - POSIX shell script for automatic tmux session prompts
+
+## Supported Platforms
+
+- **Linux**: bash, zsh
+- **macOS**: bash, zsh
+
+The installer auto-detects your shell and uses the appropriate rc file:
+- `~/.bashrc` - bash on Linux
+- `~/.bash_profile` - bash on macOS
+- `~/.zshrc` - zsh on any platform
+
+## Architecture
+
+**Installation flow**: `install.sh` clones the repo to `~/VibeMux`, creates `~/.tmux.conf` that sources `~/VibeMux/tmux.conf`, and optionally adds `tmux-session.sh` to your shell's rc file.
+
+**Nested tmux mechanism**: The config uses `M-F11`/`M-F12` as internal signals between nested instances. When switching to inner mode (`Shift+Up`), the outer tmux unbinds its keys, changes prefix to `Ctrl+B`, and sends `M-F12` to tell the inner tmux to activate. The status bar color (green=outer active, blue=inner active) indicates which instance has control.
+
+**Session management**: `tmux-session.sh` is sourced from your shell rc file. On terminal start (outside tmux), it either auto-attaches to the first existing session or prompts to create a new one.
+
+## Testing Changes
 
 ```bash
-# Copy to tmux config location
-cp tmux.conf ~/.tmux.conf
+# Test tmux.conf changes in current session
+tmux source-file ~/VibeMux/tmux.conf
 
-# Reload configuration (from within tmux)
-Prefix + r  (Ctrl+A then r)
+# Or use the keybinding (Ctrl+A then r)
+Prefix + r
+
+# Test install.sh (requires clean environment)
+rm -rf ~/VibeMux ~/.tmux.conf
+./install.sh
+
+# Test tmux-session.sh
+source ~/VibeMux/tmux-session.sh
 ```
 
-## Key Bindings
+## Key Bindings Reference
 
-**Prefix**: `Ctrl+A` (changed from default `Ctrl+B`)
+**Prefix**: `Ctrl+A`
 
 | Binding | Action |
 |---------|--------|
-| `Ctrl+T` | New window (no prefix needed) |
-| `Shift+Left/Right` | Navigate between windows |
+| `Ctrl+T` | New window (no prefix) |
+| `Shift+Left/Right` | Navigate windows |
 | `Shift+Ctrl+Left/Right` | Swap window positions |
-| `Prefix + \|` | Split pane horizontally |
-| `Prefix + -` | Split pane vertically |
+| `Ctrl+Up/Down` | Scroll mode / page up/down |
+| `Prefix + \|` | Split horizontal |
+| `Prefix + -` | Split vertical |
 | `Prefix + r` | Reload config |
-| `Prefix + p` | Previous window |
-
-## Nested tmux Mode
-
-This config supports nested tmux sessions (e.g., local tmux + remote tmux over SSH):
-
-- `Shift+Up`: Switch to "inner" mode - disables outer tmux bindings, changes status bar to blue
-- `Shift+Down`: Switch to "outer" mode - restores normal bindings, changes status bar to green
-
-The status bar color indicates which tmux instance is active (green = outer, blue = inner).
-
-## Configuration Details
-
-- Windows and panes start at index 1 (not 0)
-- Mouse support enabled
-- Automatic window renaming disabled
-- New windows/panes open in current directory
-- Extended keys support enabled for modern terminals
+| `Shift+Up` | Inner mode (blue status) |
+| `Shift+Down` | Outer mode (green status) |

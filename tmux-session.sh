@@ -1,16 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 
 # VibeMux tmux session management
-# Source this file in your .bashrc to get tmux session prompts on terminal start
+# Source this file in your shell rc file (.bashrc, .zshrc, .bash_profile)
+# to get tmux session prompts on terminal start
 
 # Only run in interactive shells
-[[ $- != *i* ]] && return
+case $- in
+    *i*) ;;      # interactive, continue
+    *) return ;; # non-interactive, exit early
+esac
 
 # Don't run if already inside tmux
 [ -n "$TMUX" ] && return
 
 # Check if tmux is available
-command -v tmux &> /dev/null || return
+command -v tmux >/dev/null 2>&1 || return
 
 # Get list of existing sessions
 sessions=$(tmux list-sessions 2>/dev/null)
@@ -28,7 +32,8 @@ else
     echo "  [name]  Start session with name"
     echo "  [s]     Skip tmux"
     echo ""
-    read -r -p "Choice: " choice
+    printf "Choice: "
+    read -r choice
 
     case "$choice" in
         "")

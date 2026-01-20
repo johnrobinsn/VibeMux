@@ -4,6 +4,8 @@ A tmux configuration for a better terminal multiplexer experience. Features intu
 
 ## Quick Install
 
+Works with **bash** and **zsh** on **Linux** and **macOS**.
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/johnrobinsn/VibeMux/main/install.sh | bash
 ```
@@ -11,12 +13,14 @@ curl -fsSL https://raw.githubusercontent.com/johnrobinsn/VibeMux/main/install.sh
 This will:
 - Clone VibeMux to `~/VibeMux`
 - Create `~/.tmux.conf` that sources the config
-- Add session management to your `.bashrc`
+- Add session management to your shell rc file (`.bashrc`, `.zshrc`, or `.bash_profile`)
 
 ### Requirements
 
-- `tmux` installed
+- `tmux` installed (3.2+ recommended for extended-keys support)
 - `git` installed
+- Supported shells: bash, zsh
+- Supported platforms: Linux, macOS
 
 ## Key Bindings
 
@@ -93,7 +97,19 @@ If you prefer manual setup:
 ```bash
 git clone https://github.com/johnrobinsn/VibeMux ~/VibeMux
 echo "source-file ~/VibeMux/tmux.conf" > ~/.tmux.conf
+```
+
+Then add session management to your shell rc file:
+
+```bash
+# For bash on Linux:
 echo '[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh' >> ~/.bashrc
+
+# For bash on macOS:
+echo '[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh' >> ~/.bash_profile
+
+# For zsh (Linux or macOS):
+echo '[ -f ~/VibeMux/tmux-session.sh ] && source ~/VibeMux/tmux-session.sh' >> ~/.zshrc
 ```
 
 ## Update
@@ -109,7 +125,10 @@ Changes take effect immediately for new tmux sessions. To reload in an existing 
 ```bash
 rm -rf ~/VibeMux
 rm ~/.tmux.conf
-# Remove the VibeMux line from ~/.bashrc
+# Remove the VibeMux line from your shell rc file:
+#   ~/.bashrc (bash on Linux)
+#   ~/.bash_profile (bash on macOS)
+#   ~/.zshrc (zsh)
 ```
 
 ## License
