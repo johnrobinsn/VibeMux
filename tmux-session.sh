@@ -20,8 +20,8 @@ command -v tmux >/dev/null 2>&1 || return
 sessions=$(tmux list-sessions 2>/dev/null)
 
 if [ -n "$sessions" ]; then
-    # Sessions exist - auto-attach to first one
-    first_session=$(tmux list-sessions -F "#{session_name}" 2>/dev/null | head -1)
+    # Sessions exist - auto-attach to most recently used one
+    first_session=$(tmux list-sessions -F "#{session_activity}:#{session_name}" 2>/dev/null | sort -rn | head -1 | cut -d: -f2)
     tmux attach-session -t "$first_session"
 else
     # No sessions exist - offer to create one or skip
